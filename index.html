@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Survival Console</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #1a1a1a;
+            --console-bg: #0a0a0a;
+            --text-color: #00d9ff;
+            --border-color: #333;
+            --screen-glow: 0 0 10px rgba(0, 255, 128, 0.2);
+            --icon-empty: #333;
+            --icon-filled: #00d9ff;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--primary-bg);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+        }
+
+        .console-container {
+            background: var(--console-bg);
+            width: 90%;
+            max-width: 1200px;
+            height: 600px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            box-shadow: var(--screen-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .console-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 0, 0.03) 0px,
+                rgba(0, 255, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+        }
+
+        .left-panel {
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-panel {
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--text-color);
+        }
+
+        .status-item {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .resource-icons {
+            display: flex;
+            gap: 10px;
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+
+        .resource-icon {
+            transition: color 0.3s ease;
+        }
+
+        .resource-icon.empty {
+            color: var(--icon-empty);
+        }
+
+        .resource-icon.filled {
+            color: var(--icon-filled);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 5px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        button:hover {
+            background: var(--text-color);
+            color: var(--console-bg);
+        }
+
+        .days-counter {
+            font-size: 2rem;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .logo-space {
+            height: 150px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .logo-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        
+        }   
+
+        .console-decoration {
+            position: absolute;
+            font-family: monospace;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: var(--text-color);
+            margin-left: 5px;
+            animation: blink 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="console-container">
+        <div class="left-panel">
+            <h1 class="title">Survival on the Moon<span class="cursor"></span></h1>
+            
+            <div class="status-item">
+                <div class="status-header">
+                    <h2>Water Supply</h2>
+                </div>
+                <div class="resource-icons" id="water-icons">
+                    <!-- Icons will be generated by JavaScript -->
+                </div>
+                <div class="button-group">
+                    <button onclick="updateResource('water', -1)">Decrease</button>
+                    <button onclick="updateResource('water', 1)">Increase</button>
+                </div>
+            </div>
+
+            <div class="status-item">
+                <div class="status-header">
+                    <h2>Food Supply</h2>
+                </div>
+                <div class="resource-icons" id="food-icons">
+                    <!-- Icons will be generated by JavaScript -->
+                </div>
+                <div class="button-group">
+                    <button onclick="updateResource('food', -1)">Decrease</button>
+                    <button onclick="updateResource('food', 1)">Increase</button>
+                </div>
+            </div>
+
+            <div class="status-item">
+                <div class="status-header">
+                    <h2>Oxygen Level</h2>
+                </div>
+                <div class="resource-icons" id="oxygen-icons">
+                    <!-- Icons will be generated by JavaScript -->
+                </div>
+                <div class="button-group">
+                    <button onclick="updateResource('oxygen', -1)">Decrease</button>
+                    <button onclick="updateResource('oxygen', 1)">Increase</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="days-counter">
+                <h2>Days Survived</h2>
+                <div id="days-value">0</div>
+                <button onclick="updateDays()">Log New Day</button>
+            </div>
+            <div class="logo-space">
+                <img src="logo.png" alt="Moon Survival Logo" class="logo-image">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const resources = {
+            water: 3,
+            food: 3,
+            oxygen: 3,
+            days: 0
+        };
+
+        const resourceIcons = {
+            water: 'fa-solid fa-droplet',
+            food: 'fa-solid fa-drumstick-bite',
+            oxygen: 'fa-solid fa-wind'
+        };
+
+        function updateResourceDisplay() {
+            for (const resource in resources) {
+                if (resource === 'days') continue;
+                
+                const container = document.getElementById(`${resource}-icons`);
+                container.innerHTML = '';
+                
+                for (let i = 0; i < 15; i++) {
+                    const icon = document.createElement('i');
+                    icon.className = `${resourceIcons[resource]} resource-icon ${i < resources[resource] ? 'filled' : 'empty'}`;
+                    container.appendChild(icon);
+                }
+            }
+        }
+
+        function updateResource(resource, amount) {
+            resources[resource] = Math.max(0, Math.min(15, resources[resource] + amount));
+            updateResourceDisplay();
+        }
+
+        function updateDays() {
+            resources.days++;
+            document.getElementById('days-value').textContent = resources.days;
+        }
+
+        // Initial display
+        updateResourceDisplay();
+
+        // Add random console decorations
+        function addConsoleDecorations() {
+            const characters = '01';
+            const container = document.querySelector('.console-container');
+            
+            for (let i = 0; i < 50; i++) {
+                const decoration = document.createElement('div');
+                decoration.className = 'console-decoration';
+                decoration.style.position = 'absolute';
+                decoration.style.left = `${Math.random() * 100}%`;
+                decoration.style.top = `${Math.random() * 100}%`;
+                decoration.textContent = characters[Math.floor(Math.random() * characters.length)];
+                container.appendChild(decoration);
+            }
+        }
+
+        addConsoleDecorations();
+    </script>
+</body>
+</html>
